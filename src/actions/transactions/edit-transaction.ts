@@ -8,7 +8,9 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-export async function addTransaction(data: TransactionSchemaServer) {
+export async function editTransaction(
+  data: TransactionSchemaServer & { id: string },
+) {
   transactionSchemaServer.parse(data);
   const { userId } = await auth();
 
@@ -16,6 +18,9 @@ export async function addTransaction(data: TransactionSchemaServer) {
     throw new Error("Unauthorized");
   }
 
-  await db.transaction.create({ data: { ...data, userId } });
+  await db.transaction.update({
+    where: { id: data.id },
+    data: { ...data, userId },
+  });
   revalidatePath("/transactions");
 }

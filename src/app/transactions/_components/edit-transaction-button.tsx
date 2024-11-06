@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowDownUpIcon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,33 +9,40 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "@/components/ui/dialog";
 import {
   transactionSchema,
-  defaultAddTransactionValues,
   type TransactionSchema,
 } from "@/utils/validations/add-transaction";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { addTransaction } from "@/actions/transactions/add-transaction";
 import { toast } from "@/hooks/use-toast";
-import { formatMoneyToNumber } from "@/utils/utils/formats";
+import { formatMoney, formatMoneyToNumber } from "@/utils/utils/formats";
 import { useState } from "react";
-import TransactionForm from "./transaction-form";
+import { Transaction } from "@prisma/client";
+import TransactionForm from "@/components/transaction-form";
+import { editTransaction } from "@/actions/transactions/edit-transaction";
 
-const AddTransactionButton = () => {
+const EditTransactionButton = ({
+  transaction,
+}: {
+  transaction: Transaction;
+}) => {
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
   const form = useForm<TransactionSchema>({
     resolver: zodResolver(transactionSchema),
-    defaultValues: defaultAddTransactionValues,
+    defaultValues: {
+      ...transaction,
+      amount: formatMoney(Number(transaction.amount)),
+    },
   });
 
   const onSubmit = async (data: TransactionSchema) => {
     try {
-      await addTransaction({
+      await editTransaction({
         ...data,
+        id: transaction.id,
         amount: formatMoneyToNumber(data.amount),
       });
 
@@ -64,21 +71,20 @@ const AddTransactionButton = () => {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="rounded-full font-bold">
-          Adicionar Transação
-          <ArrowDownUpIcon />
+        <Button variant="ghost" size="icon" className="text-muted-foreground">
+          <PencilIcon className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Adicionar Transação</DialogTitle>
-          <DialogDescription>Insira as informações abaixo</DialogDescription>
+          <DialogTitle>Atualizar Transação</DialogTitle>
+          <DialogDescription>Atualize as informações abaixo</DialogDescription>
         </DialogHeader>
 
-        <TransactionForm form={form} onSubmit={onSubmit} mode="create" />
+        <TransactionForm form={form} onSubmit={onSubmit} mode="update" />
       </DialogContent>
     </Dialog>
   );
 };
 
-export default AddTransactionButton;
+export default EditTransactionButton;

@@ -3,12 +3,10 @@ import { TransactionType } from "@prisma/client";
 import { TransactionCategory } from "@prisma/client";
 import { z } from "zod";
 
-export type AddTransactionSchema = z.infer<typeof addTransactionSchema>;
-export type AddTransactionSchemaServer = z.infer<
-  typeof addTransactionSchemaServer
->;
+export type TransactionSchema = z.infer<typeof transactionSchema>;
+export type TransactionSchemaServer = z.infer<typeof transactionSchemaServer>;
 
-export const defaultAddTransactionValues: AddTransactionSchema = {
+export const defaultAddTransactionValues: TransactionSchema = {
   name: "",
   amount: "",
   type: TransactionType.DEPOSIT,
@@ -17,7 +15,7 @@ export const defaultAddTransactionValues: AddTransactionSchema = {
   date: new Date(),
 };
 
-export const addTransactionSchema = z.object({
+export const transactionSchema = z.object({
   name: z.string().trim().min(1, { message: "O nome é obrigatório" }),
   amount: z.string().trim().min(1, { message: "O valor é obrigatório" }),
   type: z.nativeEnum(TransactionType, {
@@ -34,7 +32,7 @@ export const addTransactionSchema = z.object({
   }),
 });
 
-export const addTransactionSchemaServer = z.object({
+export const transactionSchemaServer = z.object({
   name: z.string().trim().min(1),
   amount: z.number().positive(),
   type: z.nativeEnum(TransactionType),
