@@ -3,7 +3,21 @@ import { TransactionType } from "@prisma/client";
 import { TransactionCategory } from "@prisma/client";
 import { z } from "zod";
 
-export const createTransactionSchema = z.object({
+export type AddTransactionSchema = z.infer<typeof addTransactionSchema>;
+export type AddTransactionSchemaServer = z.infer<
+  typeof addTransactionSchemaServer
+>;
+
+export const defaultAddTransactionValues: AddTransactionSchema = {
+  name: "",
+  amount: "",
+  type: TransactionType.DEPOSIT,
+  category: TransactionCategory.OTHER,
+  paymentMethod: TransactionPaymentMethod.CASH,
+  date: new Date(),
+};
+
+export const addTransactionSchema = z.object({
   name: z.string().trim().min(1, { message: "O nome é obrigatório" }),
   amount: z.string().trim().min(1, { message: "O valor é obrigatório" }),
   type: z.nativeEnum(TransactionType, {
@@ -20,13 +34,11 @@ export const createTransactionSchema = z.object({
   }),
 });
 
-export type CreateTransactionSchema = z.infer<typeof createTransactionSchema>;
-
-export const defaultCreateTransactionValues: CreateTransactionSchema = {
-  name: "",
-  amount: "1",
-  type: TransactionType.DEPOSIT,
-  category: TransactionCategory.OTHER,
-  paymentMethod: TransactionPaymentMethod.CASH,
-  date: new Date(),
-};
+export const addTransactionSchemaServer = z.object({
+  name: z.string().trim().min(1),
+  amount: z.number().positive(),
+  type: z.nativeEnum(TransactionType),
+  category: z.nativeEnum(TransactionCategory),
+  paymentMethod: z.nativeEnum(TransactionPaymentMethod),
+  date: z.date(),
+});

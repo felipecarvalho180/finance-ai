@@ -10,3 +10,6 @@ export const formatMoney = (value: number) =>
     style: "currency",
     currency: "BRL",
   }).format(Number(value));
+
+export const formatMoneyToNumber = (value: string) =>
+  Number(value.replace("R$", "").replace(".", "").replace(",", "."));

@@ -13,10 +13,10 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import {
-  createTransactionSchema,
-  defaultCreateTransactionValues,
-  type CreateTransactionSchema,
-} from "@/utils/validations/create-transaction";
+  addTransactionSchema,
+  defaultAddTransactionValues,
+  type AddTransactionSchema,
+} from "@/utils/validations/add-transaction";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "./ui/form";
@@ -26,19 +26,50 @@ import {
   TRANSACTION_PAYMENT_METHOD_OPTIONS,
   TRANSACTION_TYPE_OPTIONS,
 } from "@/utils/constants/transactions";
+import { addTransaction } from "@/actions/transactions/add-transaction";
+import { toast } from "@/hooks/use-toast";
+import { formatMoneyToNumber } from "@/utils/utils/formats";
+import { useState } from "react";
 
 const AddTransactionButton = () => {
-  const form = useForm<CreateTransactionSchema>({
-    resolver: zodResolver(createTransactionSchema),
-    defaultValues: defaultCreateTransactionValues,
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
+
+  const form = useForm<AddTransactionSchema>({
+    resolver: zodResolver(addTransactionSchema),
+    defaultValues: defaultAddTransactionValues,
   });
 
-  const onSubmit = (data: CreateTransactionSchema) => {
-    console.log(data);
+  const onSubmit = async (data: AddTransactionSchema) => {
+    try {
+      await addTransaction({
+        ...data,
+        amount: formatMoneyToNumber(data.amount),
+      });
+
+      toast({
+        title: "Transação adicionada com sucesso",
+      });
+      form.reset();
+      setDialogIsOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Erro ao adicionar transação",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <Dialog onOpenChange={(open) => !open && form.reset()}>
+    <Dialog
+      open={dialogIsOpen}
+      onOpenChange={(open) => {
+        setDialogIsOpen(open);
+        if (!open) {
+          form.reset();
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="rounded-full font-bold">
           Adicionar Transação
