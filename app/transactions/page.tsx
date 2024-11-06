@@ -1,7 +1,7 @@
 import React from "react";
 
-const Transactions = () => {
+const TransactionsPage = () => {
   return <div className="dark:text-primary">Transactions</div>;
 };
 
-export default Transactions;
+export default TransactionsPage;
