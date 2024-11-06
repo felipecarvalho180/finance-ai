@@ -5,28 +5,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TransactionTypeBadge } from "../_components/type-badge";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, TrashIcon } from "lucide-react";
-
-const TRANSACTION_CATEGORY_LABEL = {
-  HOUSING: "Habitação",
-  TRANSPORTATION: "Transporte",
-  FOOD: "Alimentação",
-  ENTERTAINMENT: "Lazer",
-  HEALTH: "Saúde",
-  EDUCATION: "Educação",
-  OTHER: "Outros",
-  UTILITY: "Utilidades",
-  SALARY: "Salário",
-};
-
-const TRANSACTION_PAYMENT_METHOD_LABEL = {
-  CASH: "Dinheiro",
-  CREDIT_CARD: "Cartão de Crédito",
-  DEBIT_CARD: "Cartão de Débito",
-  BANK_TRANSFER: "Transferência Bancária",
-  PIX: "PIX",
-  BANK_SLIP: "Boleto",
-  OTHER: "Outro",
-};
+import {
+  TRANSACTION_CATEGORY_LABEL,
+  TRANSACTION_PAYMENT_METHOD_LABEL,
+} from "@/utils/constants/transactions";
+import { formatDate, formatMoney } from "@/utils/utils/formats";
 
 export const transactionsColumns: ColumnDef<Transaction>[] = [
   {
@@ -54,20 +37,13 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
     accessorKey: "date",
     header: "Data",
     cell: ({ row: { original: transaction } }) =>
-      new Date(transaction.date).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }),
+      formatDate(new Date(transaction.date)),
   },
   {
     accessorKey: "amount",
     header: "Valor",
     cell: ({ row: { original: transaction } }) =>
-      new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(Number(transaction.amount)),
+      formatMoney(Number(transaction.amount)),
   },
   {
     accessorKey: "actions",
