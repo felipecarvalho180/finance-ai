@@ -19,8 +19,8 @@ export async function editTransaction(
   }
 
   await db.transaction.update({
-    where: { id: data.id },
     data: { ...data, userId },
+    where: { id: data.id },
   });
   revalidatePath("/transactions");
 }

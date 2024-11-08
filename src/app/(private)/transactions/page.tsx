@@ -3,9 +3,21 @@ import { db } from "@/lib/prisma";
 import React from "react";
 import { transactionsColumns } from "./_columns";
 import AddTransactionButton from "@/components/add-transaction-button";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 const TransactionsPage = async () => {
-  const transactions = await db.transaction.findMany({});
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const transactions = await db.transaction.findMany({
+    where: {
+      userId,
+    },
+  });
 
   return (
     <div className="space-y-6 p-6">
