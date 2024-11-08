@@ -5,6 +5,13 @@ export const formatDate = (date: Date) =>
     year: "numeric",
   });
 
+export const formatShortDate = (date: Date) =>
+  date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
 export const formatMoney = (value: number) =>
   new Intl.NumberFormat("pt-BR", {
     style: "currency",

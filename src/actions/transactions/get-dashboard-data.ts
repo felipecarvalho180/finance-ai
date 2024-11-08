@@ -109,16 +109,38 @@ export async function getDashboardData(month: string) {
       where: {
         userId,
         type: TransactionType.EXPENSE,
+        date: {
+          gte: new Date(new Date().getFullYear(), Number(month) - 1, 1),
+          lte: new Date(new Date().getFullYear(), Number(month), 31),
+        },
       },
       _sum: {
         amount: true,
       },
     })
-  ).map(({ category, _sum }) => ({
-    category,
-    totalAmount: Number(_sum.amount),
-    percentageOfTotal: Math.round((Number(_sum.amount) / expensesTotal) * 100),
-  }));
+  ).map(({ category, _sum }) => {
+    return {
+      category,
+      totalAmount: Number(_sum.amount),
+      percentageOfTotal: Math.round(
+        (Number(_sum.amount) / Number(expensesTotal)) * 100,
+      ),
+    };
+  });
+
+  const lastTransactions = await db.transaction.findMany({
+    where: {
+      userId,
+      date: {
+        gte: new Date(new Date().getFullYear(), Number(month) - 1, 1),
+        lte: new Date(new Date().getFullYear(), Number(month), 31),
+      },
+    },
+    orderBy: {
+      date: "desc",
+    },
+    take: 10,
+  });
 
   return {
     depositsTotal,
@@ -127,5 +149,6 @@ export async function getDashboardData(month: string) {
     balance,
     typesPercentage,
     totalExpensesPerCategory,
+    lastTransactions,
   };
 }

@@ -1,3 +1,5 @@
+import { TransactionPaymentMethod } from "@prisma/client";
+
 export const TRANSACTION_CATEGORY_LABEL = {
   HOUSING: "Habitação",
   TRANSPORTATION: "Transporte",
@@ -46,3 +48,13 @@ export const TRANSACTION_PAYMENT_METHOD_OPTIONS = Object.entries(
   value: key,
   label: value,
 }));
+
+export const TRANSACTION_PAYMENT_METHOD_ICONS = {
+  [TransactionPaymentMethod.CASH]: "/cash.svg",
+  [TransactionPaymentMethod.CREDIT_CARD]: "/credit-card.svg",
+  [TransactionPaymentMethod.DEBIT_CARD]: "/debit-card.svg",
+  [TransactionPaymentMethod.BANK_TRANSFER]: "/bank-transfer.svg",
+  [TransactionPaymentMethod.PIX]: "/pix.svg",
+  [TransactionPaymentMethod.BANK_SLIP]: "/bank-slip.svg",
+  [TransactionPaymentMethod.OTHER]: "/other.svg",
+};
