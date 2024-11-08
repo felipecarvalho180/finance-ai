@@ -3,7 +3,8 @@ import MonthSelect from "./_components/month-select";
 import SummaryCards from "./_components/summary-cards";
 import { redirect } from "next/navigation";
 import { TransactionsPieChart } from "./_components/transactions-pie-chart";
-import { getDashboardData } from "@/actions/transactions/get- dashboard-data";
+import { getDashboardData } from "@/actions/transactions/get-dashboard-data";
+import ExpensesPerCategory from "./_components/expenses-per-category";
 
 export default async function Home({
   searchParams,
@@ -31,6 +32,7 @@ export default async function Home({
           <SummaryCards {...dashboardData} />
           <div className="grid grid-cols-3 gap-6">
             <TransactionsPieChart {...dashboardData} />
+            <ExpensesPerCategory {...dashboardData} />
           </div>
         </div>
       </div>

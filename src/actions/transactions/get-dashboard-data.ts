@@ -1,7 +1,10 @@
 "use server";
 
 import { db } from "@/lib/prisma";
-import { TransactionPercentage } from "@/utils/types/transactions";
+import {
+  TotalExpensesPerCategory,
+  TransactionPercentage,
+} from "@/utils/types/transactions";
 import { auth } from "@clerk/nextjs/server";
 import { TransactionType } from "@prisma/client";
 
@@ -21,7 +24,7 @@ export async function getDashboardData(month: string) {
       await db.transaction.aggregate({
         where: {
           userId,
-          type: "DEPOSIT",
+          type: TransactionType.DEPOSIT,
           date: {
             gte: new Date(new Date().getFullYear(), Number(month) - 1, 1),
             lte: new Date(new Date().getFullYear(), Number(month), 31),
@@ -39,7 +42,7 @@ export async function getDashboardData(month: string) {
       await db.transaction.aggregate({
         where: {
           userId,
-          type: "EXPENSE",
+          type: TransactionType.EXPENSE,
           date: {
             gte: new Date(new Date().getFullYear(), Number(month) - 1, 1),
             lte: new Date(new Date().getFullYear(), Number(month), 31),
@@ -57,7 +60,7 @@ export async function getDashboardData(month: string) {
       await db.transaction.aggregate({
         where: {
           userId,
-          type: "INVESTMENT",
+          type: TransactionType.INVESTMENT,
           date: {
             gte: new Date(new Date().getFullYear(), Number(month) - 1, 1),
             lte: new Date(new Date().getFullYear(), Number(month), 31),
@@ -100,11 +103,29 @@ export async function getDashboardData(month: string) {
     ),
   };
 
+  const totalExpensesPerCategory: TotalExpensesPerCategory[] = (
+    await db.transaction.groupBy({
+      by: ["category"],
+      where: {
+        userId,
+        type: TransactionType.EXPENSE,
+      },
+      _sum: {
+        amount: true,
+      },
+    })
+  ).map(({ category, _sum }) => ({
+    category,
+    totalAmount: Number(_sum.amount),
+    percentageOfTotal: Math.round((Number(_sum.amount) / expensesTotal) * 100),
+  }));
+
   return {
     depositsTotal,
     expensesTotal,
     investmentsTotal,
     balance,
     typesPercentage,
+    totalExpensesPerCategory,
   };
 }
