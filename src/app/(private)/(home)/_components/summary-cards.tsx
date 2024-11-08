@@ -5,20 +5,20 @@ import {
   WalletIcon,
 } from "lucide-react";
 import SummaryCard from "./summary-card";
-import { getDepositsTotal } from "@/actions/transactions/get-deposits-total";
-import { getExpensesTotal } from "@/actions/transactions/get-expenses-total";
-import { getInvestmentsTotal } from "@/actions/transactions/get-investments-total";
 
 interface SummaryCardsProps {
-  month: string;
+  balance: number;
+  depositsTotal: number;
+  expensesTotal: number;
+  investmentsTotal: number;
 }
 
-const SummaryCards = async ({ month }: SummaryCardsProps) => {
-  const depositsTotal = await getDepositsTotal(month);
-  const investmentsTotal = await getInvestmentsTotal(month);
-  const expensesTotal = await getExpensesTotal(month);
-  const balance = investmentsTotal + depositsTotal - expensesTotal;
-
+const SummaryCards = async ({
+  balance,
+  depositsTotal,
+  expensesTotal,
+  investmentsTotal,
+}: SummaryCardsProps) => {
   return (
     <div className="space-y-6">
       <SummaryCard
